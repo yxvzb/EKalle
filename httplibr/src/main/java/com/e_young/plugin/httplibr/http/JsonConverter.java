@@ -22,11 +22,8 @@ import java.lang.reflect.Type;
 public class JsonConverter implements Converter {
     private Context context;
 
-    private OnJsonConverterLister lister;
-
-    public JsonConverter(Context context, OnJsonConverterLister lister) {
+    public JsonConverter(Context context) {
         this.context = context;
-        this.lister = lister;
     }
 
     @Override
@@ -38,28 +35,11 @@ public class JsonConverter implements Converter {
         String serverJson = response.body().string();
 
         if (code >= 200 && code < 300) {
-
             try {
-                JsonObject jsonObject = new JsonParser().parse(serverJson).getAsJsonObject();
-                String status = jsonObject.get("status").getAsString();
-                String message = jsonObject.get("message").getAsString();
-
-                //判断授权,如果授权失败直接忽略以下的操作
-                if (status != null && "-999".equals(status)) {
-                    lister.outLogin();
-                } else if (status != null && "1".equals(status)) {
-                    try {
-                        succeedData = new Gson().fromJson(serverJson, succeed);
-                    } catch (Exception e) {
-                        Log.e("erre",e.toString());
-                        failedData = (F) "服务器数据格式错误";
-                    }
-                } else {
-                    failedData = (F) message;
-                }
-
+                succeedData = new Gson().fromJson(serverJson, succeed);
             } catch (Exception e) {
-                failedData = (F) "Gson服务错误";
+                Log.e("erre", e.toString());
+                failedData = (F) "服务器数据格式错误";
             }
         } else if (code >= 400 && code < 500) {
             failedData = (F) "发生未知错误";
@@ -74,12 +54,5 @@ public class JsonConverter implements Converter {
                 .failed(failedData)
                 .build();
     }
-
-
-    public interface OnJsonConverterLister {
-
-        void outLogin();
-    }
-
 
 }

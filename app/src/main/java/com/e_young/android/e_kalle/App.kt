@@ -16,8 +16,6 @@ class App : Application() {
         HttpConfig.newBuilder(this)
                 .isDebug(BuildConfig.DEBUG)
                 .setLoggerTag("PluginLogg")
-                .setDeviceid(OSUtil.getDeviceId(this))
-                .setTokenLister { "111111111111111" }
                 .builder()
     }
 }

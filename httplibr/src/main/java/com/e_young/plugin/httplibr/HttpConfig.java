@@ -3,8 +3,6 @@ package com.e_young.plugin.httplibr;
 import android.content.Context;
 
 import com.e_young.plugin.httplibr.core.HeadConsts;
-import com.e_young.plugin.httplibr.http.JsonConverter;
-import com.e_young.plugin.httplibr.http.RedirectInterceptor;
 import com.e_young.plugin.httplibr.util.OSUtil;
 import com.e_young.plugin.httplibr.util.SystemUtil;
 import com.yanzhenjie.kalle.Kalle;
@@ -32,7 +30,7 @@ public class HttpConfig {
     }
 
     public HttpConfig(Context context, Builder builder) {
-        Kalle.setConfig(getKallConfig(context, builder.loggerTag, builder.Debug, builder.DEVICEID, builder.lister, builder.tokenLister));
+        Kalle.setConfig(getKallConfig(context, builder.loggerTag, builder.Debug));
     }
 
     /**
@@ -57,21 +55,17 @@ public class HttpConfig {
      * }
      */
     private KalleConfig getKallConfig(Context context, String loggerTag
-            , boolean Debug, String deviceid
-            , JsonConverter.OnJsonConverterLister lister
-            , RedirectInterceptor.OnRedirectInterceLister tokenLister) {
+            , boolean Debug) {
 
         KalleConfig config = null;
 
         try {
             config = KalleConfig.newBuilder()
                     .addInterceptor(new LoggerInterceptor(loggerTag, Debug))
-                    .addInterceptor(new RedirectInterceptor(tokenLister))
                     .connectionTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(15, TimeUnit.SECONDS)
                     .network(new BroadcastNetwork(context))
                     .connectFactory(OkHttpConnectFactory.newBuilder().build())
-                    .converter(new JsonConverter(context, lister))
                     .addHeader(HeadConsts.APPVER, OSUtil.getAppVersionName(context))
                     .addHeader(HeadConsts.CONTENT_TYPE, HeadConsts.CONTENT_TYPE_VEL)
                     .addHeader(HeadConsts.OS, HeadConsts.OS_VEL)
@@ -79,7 +73,6 @@ public class HttpConfig {
                     .addHeader(HeadConsts.OSVERSION, SystemUtil.getSystemVersion())
                     .addHeader(HeadConsts.PHONEMODEL, SystemUtil.getSystemModel())
                     .addHeader(HeadConsts.OSTYPE, OSUtil.getOsType(context))
-                    .addHeader(HeadConsts.DEVICEID, deviceid)
                     .build();
         } catch (Exception error) {
             config = KalleConfig.newBuilder().build();
@@ -106,23 +99,6 @@ public class HttpConfig {
          */
         private boolean Debug = false;
 
-        /**
-         * 极光识别的 udid
-         *
-         * @param context
-         */
-        private String DEVICEID = "";
-        /**
-         * 拦截器 jsonconverter
-         *
-         * @param context
-         */
-        private JsonConverter.OnJsonConverterLister lister;
-        /**
-         * 拦截器 token
-         */
-        private RedirectInterceptor.OnRedirectInterceLister tokenLister;
-
 
         public Builder(Context context) {
             this.context = context;
@@ -137,22 +113,6 @@ public class HttpConfig {
             this.Debug = debug;
             return this;
         }
-
-        public Builder setDeviceid(String id) {
-            this.DEVICEID = id;
-            return this;
-        }
-
-        public Builder setJsonConverter(JsonConverter.OnJsonConverterLister lister) {
-            this.lister = lister;
-            return this;
-        }
-
-        public Builder setTokenLister(RedirectInterceptor.OnRedirectInterceLister tokenLister) {
-            this.tokenLister = tokenLister;
-            return this;
-        }
-
 
         public HttpConfig builder() {
             return new HttpConfig(this.context, this);
