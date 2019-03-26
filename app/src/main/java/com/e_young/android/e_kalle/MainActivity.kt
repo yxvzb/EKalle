@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import com.e_young.plugin.assistant_plugin.bean.serch.MapSerch
 import com.e_young.plugin.httplibr.core.HeadConsts
 import com.e_young.plugin.httplibr.util.JsonBodyUtil
 import com.yanzhenjie.kalle.Kalle
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         sample_text.setOnClickListener {
-            login()
+            getSerchList()
         }
     }
 
@@ -65,6 +66,30 @@ class MainActivity : AppCompatActivity() {
 //                })
 
 
+    }
+
+    private fun getSerchList() {
+        Kalle.get("https://apis.map.qq.com/ws/place/v1/suggestion")
+                .param("region", "北京")
+                .param("keyword", "新华国际广场")
+                .param("key", "ZXVBZ-4333V-RT3PJ-UQYHY-SIBIQ-BHFTU")
+                .perform(object : SimpleCallback<MapSerch>() {
+
+                    override fun onResponse(response: SimpleResponse<MapSerch, String>?) {
+                        try {
+                            if (response == null || response.succeed() == null) {
+                                return
+                            }
+                            if(response.succeed()!=null){
+
+                            }
+
+                        } catch (e: Exception) {
+
+                        }
+
+                    }
+                })
     }
 
 

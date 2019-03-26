@@ -3,6 +3,7 @@ package com.e_young.plugin.httplibr;
 import android.content.Context;
 
 import com.e_young.plugin.httplibr.core.HeadConsts;
+import com.e_young.plugin.httplibr.http.JsonConverter;
 import com.e_young.plugin.httplibr.util.OSUtil;
 import com.e_young.plugin.httplibr.util.SystemUtil;
 import com.yanzhenjie.kalle.Kalle;
@@ -66,6 +67,7 @@ public class HttpConfig {
                     .readTimeout(15, TimeUnit.SECONDS)
                     .network(new BroadcastNetwork(context))
                     .connectFactory(OkHttpConnectFactory.newBuilder().build())
+                    .converter(new JsonConverter(context))
                     .addHeader(HeadConsts.APPVER, OSUtil.getAppVersionName(context))
                     .addHeader(HeadConsts.CONTENT_TYPE, HeadConsts.CONTENT_TYPE_VEL)
                     .addHeader(HeadConsts.OS, HeadConsts.OS_VEL)
